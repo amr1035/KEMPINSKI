@@ -1,0 +1,28 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بحث عن مدعو</title><link rel="stylesheet" href="style.css"></head><body>
+<header><h1>🏛️ توزيع المدعوين — Kempinski</h1><a href="index.html" >تسجيل الأسماء</a><a href="search.html" class="on">بحث عن مدعو</a></header>
+<main style="max-width:700px">
+<form class="row" id="f"><input type="text" id="q" placeholder="اكتب اسم المدعو (أو جزءًا منه)..." autofocus><button>بحث</button></form>
+<ul class="results" id="res"></ul>
+</main>
+<script src="common.js"></script>
+<script>
+let guests={};
+const norm=s=>s.replace(/[ً-ٟـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase().trim();
+function search(){
+  const q=norm(document.getElementById('q').value),res=document.getElementById('res');res.innerHTML='';
+  if(!q)return;
+  const words=q.split(/\s+/);let n=0;
+  for(const [t,arr] of Object.entries(guests)) arr.forEach(name=>{
+    const nn=norm(name);if(!words.every(w=>nn.includes(w)))return;n++;
+    const li=document.createElement('li');
+    const d=document.createElement('div');const a=document.createElement('div');a.textContent=name;a.style.fontWeight='600';
+    const b=document.createElement('div');b.className='sub';b.textContent='طاولة رقم '+t;d.append(a,b);
+    const l=document.createElement('a');l.href='view.html?table='+t+'&name='+encodeURIComponent(name);l.textContent='عرض مكان الطاولة';
+    li.append(d,l);res.appendChild(li);});
+  if(!n){res.innerHTML='<li>لا توجد نتائج</li>';}
+}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();search();};
+document.getElementById('q').oninput=search;
+api('GET').then(g=>{guests=g;});
+</script></body></html>
